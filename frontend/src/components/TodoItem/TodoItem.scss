@@ -1,0 +1,31 @@
+@use "../../scss/" as *;
+
+.todoitem_container {
+    @include flex(center, space-between);
+    margin: 8px;
+    border-radius: 3px;
+    background-color: white;
+    overflow: hidden;
+    min-height: 44px;
+
+    .name {
+        margin: 8px 0 8px 8px;
+        overflow-wrap: break-word;
+        max-width: 170px;
+    }
+
+    .actions {
+        @include flex(center, center);
+        align-self: flex-start;
+        flex-direction: row;
+        margin: 4px 4px 0 4px;
+    }
+
+    i {
+        font-size: 20px;
+    }
+
+    .bx-x {
+        font-size: 24px;
+    }
+}

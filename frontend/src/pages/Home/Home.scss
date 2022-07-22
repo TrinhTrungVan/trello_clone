@@ -1,0 +1,36 @@
+@use "../../scss" as *;
+
+.home_container {
+    @include flex(center, center);
+
+    .wrapper {
+        display: flex;
+        flex-direction: row;
+        max-width: 1400px;
+        height: calc(100vh - 44px);
+        background-color: rgba(black, 0.2);
+        overflow-x: overlay;
+
+        &::-webkit-scrollbar {
+            height: 12px;
+            width: 12px;
+        }
+
+        &::-webkit-scrollbar-track-piece {
+            background: rgba(black, 0.3);
+        }
+
+        &::-webkit-scrollbar-track {
+            border-radius: 8px;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 4px;
+        }
+
+        .board {
+            padding: 12px;
+        }
+    }
+}

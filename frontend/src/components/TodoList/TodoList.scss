@@ -1,0 +1,23 @@
+@use "../../scss/" as *;
+
+.todolist_container {
+    min-width: 280px;
+    background-color: rgba(white, 0.6);
+    margin: 12px 12px 24px 0px;
+    border-radius: 4px;
+
+    .header {
+        @include flex(center, space-between);
+        max-width: 100%;
+        margin: 8px 8px 16px 8px;
+        font-weight: 500;
+        .name {
+            max-width: 90%;
+            overflow-wrap: break-word;
+        }
+        i {
+            max-width: 10%;
+            align-self: flex-start;
+        }
+    }
+}
