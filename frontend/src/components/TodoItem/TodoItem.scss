@@ -2,30 +2,23 @@
 
 .todoitem_container {
     @include flex(center, space-between);
-    margin: 8px;
-    border-radius: 3px;
-    background-color: white;
-    overflow: hidden;
+    width: 265px;
     min-height: 44px;
+    background-color: white;
+    border-radius: 3px;
+    overflow: hidden;
+    user-select: none;
+    margin: 2px 4px;
 
     .name {
         margin: 8px 0 8px 8px;
-        overflow-wrap: break-word;
         max-width: 170px;
-    }
-
-    .actions {
-        @include flex(center, center);
-        align-self: flex-start;
-        flex-direction: row;
-        margin: 4px 4px 0 4px;
+        overflow-wrap: break-word;
+        user-select: none;
     }
 
     i {
-        font-size: 20px;
-    }
-
-    .bx-x {
-        font-size: 24px;
+        font-size: 18px;
+        padding: 4px;
     }
 }

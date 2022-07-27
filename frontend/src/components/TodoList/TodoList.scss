@@ -9,15 +9,55 @@
     .header {
         @include flex(center, space-between);
         max-width: 100%;
-        margin: 8px 8px 16px 8px;
+        margin: 8px 8px 8px 16px;
         font-weight: 500;
         .name {
-            max-width: 90%;
+            max-width: 80%;
             overflow-wrap: break-word;
+            user-select: none;
+            font-size: 16px;
         }
         i {
-            max-width: 10%;
+            max-width: 20%;
+            font-size: 24px;
             align-self: flex-start;
+            cursor: pointer;
+            border-radius: 4px;
+            padding: 4px;
+
+            &:hover {
+                background-color: white;
+            }
+        }
+    }
+
+    .content {
+        @include flex(center, center);
+        flex-direction: column;
+    }
+
+    .todolist_actions {
+        @include flex(center, center);
+        flex-direction: column;
+        margin: 8px 0px;
+
+        .input_todo-add {
+            width: 265px;
+            border: black 2px solid;
+            border-radius: 4px;
+            outline: none;
+            height: 44px;
+            padding: 4px;
+            background-color: white;
+        }
+
+        .btns {
+            @include flex(center, center);
+        }
+
+        i {
+            font-size: 24px;
+            padding: 4px;
         }
     }
 }
