@@ -15,7 +15,8 @@ export const getAllTodoLists = async (req, res) => {
 };
 
 export const createTodoList = async (req, res) => {
-    const newTodoList = new TodoList(req.body);
+    const nameList = req.body.nameList;
+    const newTodoList = new TodoList({ name: nameList, data: [] });
     newTodoList.save().then(() => res.send(JSON.stringify(newTodoList)));
 };
 
@@ -27,6 +28,8 @@ export const deleteTodoList = async (req, res) => {
 
 export const updateTodoList = async (req, res) => {
     const id = req.params.id;
-    const updateList = new TodoList(req.body);
-    await TodoList.findByIdAndUpdate(id, updateList).then(() => res.send(JSON.stringify(updateList)));
+    const nameList = req.body.name;
+    await TodoList.findByIdAndUpdate(id, { name: nameList });
+    const updatedList = await TodoList.findById(id);
+    res.send(JSON.stringify(updatedList));
 };

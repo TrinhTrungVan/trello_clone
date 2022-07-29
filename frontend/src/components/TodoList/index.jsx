@@ -3,15 +3,30 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 import TodoItem from "../../components/TodoItem";
-import AddItem from "../../components/AddItem";
 
 import "./TodoList.scss";
 
 const TodoList = (props) => {
     const list = props.list;
-    const [isAdding, setIsAdding] = useState(false);
-    const [nameTodoAdd, setNameTodoAdd] = useState("");
     const [todos, setTodos] = useState([]);
+    const [isAdding, setIsAdding] = useState(false);
+    const [inputValue, setInputValue] = useState("");
+
+    const [isEditingList, setIsEditingList] = useState(false);
+    const [editNameList, setEditNameList] = useState(list.name);
+
+    const handleOnChangeNameList = (e) => {
+        setEditNameList(e.target.value);
+    };
+    const handleEditList = () => {
+        setIsEditingList(!isEditingList);
+        if (isEditingList) {
+            props.handleEditList({ _id: list._id, name: editNameList });
+        }
+    };
+    const handleDeleteList = () => {
+        props.handleDeleteList(list._id);
+    };
 
     useEffect(() => {
         const getTodos = async () => {
@@ -21,34 +36,111 @@ const TodoList = (props) => {
         getTodos();
     }, []);
 
-    const handleOnClick = () => {
-        if (isAdding && nameTodoAdd !== "") {
-            todos.push({ id: todos.length + 1, name: nameTodoAdd });
-            setNameTodoAdd("");
-        }
-        setIsAdding((prev) => !prev);
+    const handleShowForm = () => {
+        setIsAdding(!isAdding);
+    };
+    const handleOnChange = (e) => {
+        setInputValue(e.target.value);
     };
 
-    const handleCancel = () => {
-        setNameTodoAdd("");
-        setIsAdding(false);
+    const handleAddTodo = () => {
+        if (inputValue === "") {
+            setIsAdding(false);
+            return;
+        }
+        const addTodo = async () => {
+            try {
+                const response = await axios.post("http://localhost:1904/api/todos/create", { listId: list._id, nameTodo: inputValue });
+                setTodos([...todos, response.data]);
+                setInputValue("");
+                setIsAdding(false);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        addTodo();
     };
-    const handleChange = (e) => {
-        setNameTodoAdd(e.target.value);
+
+    const handleEditTodo = (data) => {
+        const editTodo = async () => {
+            try {
+                const response = await axios.put(`http://localhost:1904/api/todos/${data._id}`, data);
+                const updatedTodo = response.data;
+                const newTodos = todos.map((todo) => {
+                    if (todo._id === updatedTodo._id) {
+                        return { ...todo, name: updatedTodo.name };
+                    }
+                    return todo;
+                });
+                setTodos(newTodos);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        editTodo();
+    };
+
+    const handleDeleteTodo = (id) => {
+        const deleteTodo = async () => {
+            try {
+                const response = await axios.delete(`http://localhost:1904/api/todos/${id}`, { params: { listId: list._id } });
+                const newTodos = todos.filter((todo) => todo._id !== id);
+                setTodos(newTodos);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        deleteTodo();
     };
 
     return (
         <div id={list._id} className='todolist_container'>
             <div className='header'>
-                <div className='name'>{list.name}</div>
-                <i className='bx bx-dots-horizontal-rounded'></i>
+                {isEditingList ? (
+                    <input className='edit_input' type='text' value={editNameList} onChange={handleOnChangeNameList} />
+                ) : (
+                    <div className='name'>{list.name}</div>
+                )}
+                <div className='actions'>
+                    <div className='edit_btn' onClick={handleEditList}>
+                        {isEditingList ? <i className='bx bx-check'></i> : <i className='bx bx-pencil'></i>}
+                    </div>
+                    <div className='delete_btn'>
+                        <i className='bx bx-x' onClick={handleDeleteList}></i>
+                    </div>
+                </div>
             </div>
             <div className='content'>
                 {todos.map((todo, index) => (
-                    <TodoItem key={index} index={todo.id} item={todo} />
+                    <TodoItem key={index} id={todo._id} item={todo} handleEditTodo={handleEditTodo} handleDeleteTodo={handleDeleteTodo} />
                 ))}
             </div>
-            <AddItem type='card' />
+            <div className='additem_container'>
+                {isAdding ? (
+                    <div className='additem_form'>
+                        <input
+                            className='additem_form_input'
+                            type='text'
+                            value={inputValue}
+                            onChange={handleOnChange}
+                            placeholder={`Enter the title for this card...`}
+                        />
+                        <div className='additem_form_actions'>
+                            <button className='add' onClick={handleAddTodo}>
+                                Add card
+                            </button>
+                            <button className='cancel' onClick={handleShowForm}>
+                                <i className='bx bx-x'></i>
+                            </button>
+                        </div>
+                    </div>
+                ) : (
+                    <button className='additem_btn' onClick={handleShowForm}>
+                        <i className='bx bx-plus'></i>
+                        Add a card
+                    </button>
+                )}
+            </div>
         </div>
     );
 };
