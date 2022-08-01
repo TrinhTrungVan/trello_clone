@@ -21,19 +21,24 @@ const Home = () => {
     useEffect(() => {
         const getAllLists = async () => {
             let response = await axios.get("http://localhost:1904/api/todo_lists");
-            setLists(response.data);
+            const result = response.data;
+            setLists(result);
         };
         getAllLists();
     }, []);
 
+    // Handle list
     const handleAddList = () => {
         const addList = async () => {
             try {
                 let response = await axios.post("http://localhost:1904/api/todo_lists/create", { nameList: inputValue });
                 const newList = response.data;
-                setLists([...lists, newList]);
+                const newLists = [...lists, newList];
+
                 setInputValue("");
                 setIsAdding(false);
+
+                setLists(newLists);
             } catch (error) {
                 console.log(error);
             }
@@ -66,6 +71,7 @@ const Home = () => {
                 const response = await axios.delete(`http://localhost:1904/api/todo_lists/${id}`);
                 const deleteList = response.data;
                 const newLists = lists.filter((list) => list._id !== deleteList._id);
+
                 setLists(newLists);
             } catch (error) {
                 console.log(error);
@@ -74,11 +80,36 @@ const Home = () => {
         deleteList();
     };
 
-    let dragId = null;
+    const handleUpdateWhenMoveTodo = (data) => {
+        const updateTwoList = async () => {
+            try {
+                await axios.put("http://localhost:1904/api/board/update_todo_list", data);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+
+        updateTwoList();
+    };
+
+    const handleUpdateBoard = (data) => {
+        const updateBoard = async () => {
+            try {
+                await axios.put("http://localhost:1904/api/board/update_board", data);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        updateBoard();
+    };
+
+    let dragId;
     let isDragging = false;
     let isCard;
     let topGhost;
     let leftGhost;
+    let fromListId;
+    let targetListId;
 
     const handleMouseDown = (e) => {
         if (e.target.matches(".name") || e.target.matches(".todoitem_container")) {
@@ -86,6 +117,7 @@ const Home = () => {
             isDragging = true;
             const dragEl = e.target.closest(".todoitem_container");
             dragId = dragEl.id;
+            fromListId = dragEl.closest(".todolist_container").id;
             const rectDragEl = dragEl.getBoundingClientRect();
             topGhost = e.clientY - rectDragEl.top;
             leftGhost = e.clientX - rectDragEl.left;
@@ -125,7 +157,7 @@ const Home = () => {
             placeholder.id = "placeholder";
             placeholder.style.display = "none";
             placeholder.style.height = rectDragEl.height + "px";
-            placeholder.style.minWidth = rectDragEl.width + 5 + "px";
+            placeholder.style.minWidth = rectDragEl.width + 4 + "px";
             placeholder.style.marginTop = "12px";
 
             // Prepend ghost and placeholder
@@ -162,12 +194,14 @@ const Home = () => {
             if (isCard) {
                 const bodyList = e.target.closest(".todolist_container");
                 if (bodyList && !bodyList.querySelector(".content").hasChildNodes() && dragEl) {
+                    targetListId = bodyList.id;
                     bodyList.querySelector(".content").prepend(placeholder);
                     bodyList.querySelector(".content").prepend(dragEl);
                 }
             }
 
             if (target) {
+                targetListId = target.closest(".todolist_container").id;
                 if (isCard) {
                     if (isTop(e.clientY, target)) {
                         target.parentNode.insertBefore(placeholder, target);
@@ -208,9 +242,26 @@ const Home = () => {
             const placeholder = document.getElementById("placeholder");
             ghost.remove();
             placeholder.remove();
+
+            if (isCard) {
+                const fromListData = [...document.getElementById(fromListId).childNodes[1].childNodes].map((node) => {
+                    return node.id;
+                });
+                const targetListData = [...document.getElementById(targetListId).childNodes[1].childNodes].map((node) => {
+                    return node.id;
+                });
+                handleUpdateWhenMoveTodo({ fromList: { _id: fromListId, data: fromListData }, targetList: { _id: targetListId, data: targetListData } });
+            } else {
+                const listData = [...document.getElementById(targetListId).parentNode.childNodes].slice(0, -1).map((node) => {
+                    return node.id;
+                });
+                handleUpdateBoard(listData);
+            }
         }
         isDragging = false;
         isCard = null;
+        fromListId = null;
+        targetListId = null;
     };
 
     const isTop = (clientY, element) => {

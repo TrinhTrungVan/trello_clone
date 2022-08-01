@@ -24,7 +24,7 @@ const TodoItem = (props) => {
     };
 
     return (
-        <div id={item._id} data-index={props.index} className='todoitem_container'>
+        <div id={item._id} className='todoitem_container'>
             {isEditing ? <input className='edit_input' type='text' value={editValue} onChange={handleOnChange} /> : <div className='name'>{item.name}</div>}
             <div className='actions'>
                 <div className='edit_btn' onClick={handleEditTodo}>

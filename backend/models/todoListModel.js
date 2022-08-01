@@ -1,8 +1,13 @@
 import mongoose from "mongoose";
 
 const todoListScheme = new mongoose.Schema({
-    data: Array,
     name: String,
+    data: [
+        {
+            type: String,
+            ref: "todo",
+        },
+    ],
 });
 
 const TodoList = mongoose.model("todo_list", todoListScheme);

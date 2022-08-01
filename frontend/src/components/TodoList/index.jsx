@@ -18,6 +18,14 @@ const TodoList = (props) => {
     const handleOnChangeNameList = (e) => {
         setEditNameList(e.target.value);
     };
+    const handleShowForm = () => {
+        setIsAdding(!isAdding);
+    };
+    const handleOnChange = (e) => {
+        setInputValue(e.target.value);
+    };
+
+    // Handle list
     const handleEditList = () => {
         setIsEditingList(!isEditingList);
         if (isEditingList) {
@@ -36,13 +44,7 @@ const TodoList = (props) => {
         getTodos();
     }, []);
 
-    const handleShowForm = () => {
-        setIsAdding(!isAdding);
-    };
-    const handleOnChange = (e) => {
-        setInputValue(e.target.value);
-    };
-
+    // Handle todo
     const handleAddTodo = () => {
         if (inputValue === "") {
             setIsAdding(false);
@@ -51,9 +53,12 @@ const TodoList = (props) => {
         const addTodo = async () => {
             try {
                 const response = await axios.post("http://localhost:1904/api/todos/create", { listId: list._id, nameTodo: inputValue });
-                setTodos([...todos, response.data]);
+                const newTodo = response.data;
+                const newTodos = [...todos, newTodo];
+
                 setInputValue("");
                 setIsAdding(false);
+                setTodos(newTodos);
             } catch (error) {
                 console.log(error);
             }
@@ -99,7 +104,7 @@ const TodoList = (props) => {
                 {isEditingList ? (
                     <input className='edit_input' type='text' value={editNameList} onChange={handleOnChangeNameList} />
                 ) : (
-                    <div className='name'>{list.name}</div>
+                    <div className='header_name'>{list.name}</div>
                 )}
                 <div className='actions'>
                     <div className='edit_btn' onClick={handleEditList}>
