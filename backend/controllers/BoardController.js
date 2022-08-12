@@ -10,4 +10,11 @@ export const updateDataList = async (req, res) => {
 
 export const updateBoard = async (req, res) => {
     await Board.find({}).limit(1).updateOne({}, { data: req.body });
+    await Board.find({})
+        .limit(1)
+        .populate("data")
+        .then((data) => {
+            console.log(data[0].data);
+            res.json(data[0].data);
+        });
 };

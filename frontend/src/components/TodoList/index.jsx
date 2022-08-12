@@ -88,9 +88,9 @@ const TodoList = (props) => {
     const handleDeleteTodo = (id) => {
         const deleteTodo = async () => {
             try {
-                const response = await axios.delete(`http://localhost:1904/api/todos/${id}`, { params: { listId: list._id } });
-                const newTodos = todos.filter((todo) => todo._id !== id);
-                setTodos(newTodos);
+                await axios.delete(`http://localhost:1904/api/todos/${id}`, { params: { listId: list._id } });
+                const todo = document.getElementById(id);
+                todo.remove();
             } catch (error) {
                 console.log(error);
             }

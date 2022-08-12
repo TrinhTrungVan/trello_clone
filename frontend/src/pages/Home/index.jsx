@@ -45,7 +45,6 @@ const Home = () => {
         };
         addList();
     };
-
     const handleEditList = (data) => {
         const editList = async () => {
             try {
@@ -64,15 +63,11 @@ const Home = () => {
         };
         editList();
     };
-
     const handleDeleteList = (id) => {
         const deleteList = async () => {
             try {
-                const response = await axios.delete(`http://localhost:1904/api/todo_lists/${id}`);
-                const deleteList = response.data;
-                const newLists = lists.filter((list) => list._id !== deleteList._id);
-
-                setLists(newLists);
+                await axios.delete(`http://localhost:1904/api/todo_lists/${id}`);
+                document.getElementById(id).remove();
             } catch (error) {
                 console.log(error);
             }
@@ -80,6 +75,15 @@ const Home = () => {
         deleteList();
     };
 
+    let dragId;
+    let isDragging = false;
+    let isCard;
+    let topGhost;
+    let leftGhost;
+    let fromListId;
+    let targetListId;
+
+    // Handle when move todo or list
     const handleUpdateWhenMoveTodo = (data) => {
         const updateTwoList = async () => {
             try {
@@ -88,10 +92,8 @@ const Home = () => {
                 console.log(error);
             }
         };
-
         updateTwoList();
     };
-
     const handleUpdateBoard = (data) => {
         const updateBoard = async () => {
             try {
@@ -102,14 +104,6 @@ const Home = () => {
         };
         updateBoard();
     };
-
-    let dragId;
-    let isDragging = false;
-    let isCard;
-    let topGhost;
-    let leftGhost;
-    let fromListId;
-    let targetListId;
 
     const handleMouseDown = (e) => {
         if (e.target.matches(".name") || e.target.matches(".todoitem_container")) {
@@ -165,7 +159,6 @@ const Home = () => {
             document.body.prepend(placeholder);
         }
     };
-
     const handleMouseMove = (e) => {
         const dragEl = document.getElementById(dragId);
         const ghost = document.getElementById("ghost");
@@ -230,8 +223,7 @@ const Home = () => {
             }
         }
     };
-
-    const handleMouseUp = (e) => {
+    const handleMouseUp = () => {
         if (isDragging) {
             const dragEl = document.getElementById(dragId);
             if (dragEl) {
